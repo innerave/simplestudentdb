@@ -25,9 +25,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-
 app.use(methodOverride('_method'));
-
 
 app.use(session({
     secret : "nodejs",
@@ -43,7 +41,6 @@ app.use((req, res, next)=> {
     res.locals.error_msg = req.flash(('error_msg'));
     next();
 });
-
 
 app.use(studentRoutes);
 

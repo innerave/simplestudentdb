@@ -1,0 +1,19 @@
+<%- include('partials/header') -%>
+<div class="container mt-5 w-50">
+
+    <h2 class="mb-4">Добавить студента</h2>
+
+    <form action="/student/new" method="POST">
+        <input type="text" name="name" class="form-control" placeholder="ФИО">
+
+        <input type="text" name="institute" class="form-control" placeholder="Институт">
+
+        <input type="text" name="department" class="form-control" placeholder="Кафедра">
+
+        <input type="text" name="group" class="form-control" placeholder="Группа">
+
+        <button type="submit" class="btn btn-primary mt-3">Добавить</button>
+
+    </form>
+</div>
+<%- include('partials/footer') -%>
