@@ -22,12 +22,8 @@ mongoose.connect(process.env.DATABASE, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true
-});
-
-mongoose.connect(process.env.DATABASE_PWD, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true
+}).then (con => {
+    console.log('База данных подключена.')
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));

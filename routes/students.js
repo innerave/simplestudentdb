@@ -309,15 +309,9 @@ router.delete('/delete/:id', isAuthenticatedUser, (req, res) => {
         });
 });
 
-router.use((req, res, next) => {
-    const error = new Error("Не найдено");
-    error.status = 404;
-    next(error);
+router.get('*', (req, res)=> {
+    res.render('error');
 });
 
-router.use((error, req, res, next) => {
-    console.error(error);
-    res.render('error')
-});
 
 module.exports = router;

@@ -4,14 +4,14 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/innerave/simplestudentdb.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Alexander Vladimirov",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/innerave/simplestudentdb/issues"
   },
