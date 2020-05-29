@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Студенты МАИ</title>
+    <title>Маевник</title>
 
     <link rel="stylesheet" type="text/css" href="../libs/bootstrap.css">
     <link href="../libs/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -16,7 +16,7 @@
 
 <body>
     <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-        <a class="navbar-brand text-white ml-4" href="/"><b>Студенты МАИ</b></a>
+        <a class="navbar-brand text-white ml-4" href="/"><b>Маевник</b></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,10 +26,25 @@
 
             <div class="mr-5">
                 <ul class="navbar-nav mr-auto mr-0">
+                    <% if(currentUser) { %>
+                        
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#"><%= currentUser.name %></b></a>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/student/new">Добавить</b></a>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/password/change">Сменить пароль</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/logout">Выйти</a>
+
+                    </li>
+                    <% } %>
                 </ul>
             </div>
 

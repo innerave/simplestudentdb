@@ -8,13 +8,23 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 // Файлик с маршрутизацией
 const studentRoutes = require('./routes/students');
 
+const User = require('./models/usermodel');
+
 dotenv.config({path : './config.env'});
 
-mongoose.connect(process.env.DATABASE_LOCAL, {
+mongoose.connect(process.env.DATABASE, {
+    useNewUrlParser : true,
+    useUnifiedTopology : true,
+    useCreateIndex: true
+});
+
+mongoose.connect(process.env.DATABASE_PWD, {
     useNewUrlParser : true,
     useUnifiedTopology : true,
     useCreateIndex: true
@@ -33,16 +43,27 @@ app.use(session({
     saveUninitialized:true
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
 app.use(flash());
 
 //Переменные для сообщений
 app.use((req, res, next)=> {
     res.locals.success_msg = req.flash(('success_msg'));
     res.locals.error_msg = req.flash(('error_msg'));
+    //failureFlash в passport требует специальной переменной
+    res.locals.error = req.flash(('error'));
+    res.locals.currentUser = req.user;
     next();
 });
 
 app.use(studentRoutes);
+
 
 const port = process.env.PORT;
 app.listen(port, ()=> {

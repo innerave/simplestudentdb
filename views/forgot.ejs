@@ -1,0 +1,19 @@
+<%- include('partials/header') -%>
+
+<h1 class="text-center mt-5 mb-3">Забыл пароль</h1>
+<div class="container w-25">
+    <%- include('partials/messages') -%>
+    <form action="/forgot" method="POST">
+
+        <div class="form-group px-0">
+            <input type="email" name="email" class="form-control" placeholder="Введите почту">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Отправить</button>
+    </form>
+    <a class="float-right" href="/login">Назад ко входу</a>
+</div>
+
+
+</div>
+
+<%- include('partials/footer') -%>
