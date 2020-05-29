@@ -76,7 +76,7 @@ router.post('/signup', (req, res) => {
         }
         passport.authenticate('local')(req, res, () => {
             req.flash('success_msg', 'Аккаунт успешно создан');
-            res.redirect('/login');
+            res.redirect('/');
         });
     });
 
