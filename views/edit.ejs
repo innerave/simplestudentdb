@@ -7,8 +7,10 @@
     <form action="/edit/<%= student.id %>?_method=PUT" method="POST">
         <input type="hidden" name="_method" value="PUT">
         <input type="text" value="<%= student.name %>" name="name" class="form-control" placeholder="ФИО">
-        <input type="text" value="<%= student.institute %>" name="institute" class="form-control" placeholder="Институт">
-        <input type="text" value="<%= student.department %>" name="department" class="form-control" placeholder="Кафедра">
+        <input type="text" value="<%= student.institute %>" name="institute" class="form-control"
+            placeholder="Институт">
+        <input type="text" value="<%= student.department %>" name="department" class="form-control"
+            placeholder="Кафедра">
         <input type="text" value="<%= student.group %>" name="group" class="form-control" placeholder="Группа">
         <button type="submit" class="btn btn-primary mt-3 btn-block">Изменить</button>
     </form>

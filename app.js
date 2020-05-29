@@ -16,21 +16,21 @@ const studentRoutes = require('./routes/students');
 
 const User = require('./models/usermodel');
 
-dotenv.config({path : './config.env'});
+dotenv.config({ path: './config.env' });
 
 mongoose.connect(process.env.DATABASE, {
-    useNewUrlParser : true,
-    useUnifiedTopology : true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     useCreateIndex: true
 });
 
 mongoose.connect(process.env.DATABASE_PWD, {
-    useNewUrlParser : true,
-    useUnifiedTopology : true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     useCreateIndex: true
 });
 
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -38,14 +38,14 @@ app.use(express.static('public'));
 app.use(methodOverride('_method'));
 
 app.use(session({
-    secret : "nodejs",
-    resave : true,
-    saveUninitialized:true
+    secret: "nodejs",
+    resave: true,
+    saveUninitialized: true
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy({usernameField : 'email'}, User.authenticate()));
+passport.use(new LocalStrategy({ usernameField: 'email' }, User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -53,7 +53,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use(flash());
 
 //Переменные для сообщений
-app.use((req, res, next)=> {
+app.use((req, res, next) => {
     res.locals.success_msg = req.flash(('success_msg'));
     res.locals.error_msg = req.flash(('error_msg'));
     //failureFlash в passport требует специальной переменной
@@ -66,6 +66,6 @@ app.use(studentRoutes);
 
 
 const port = process.env.PORT;
-app.listen(port, ()=> {
+app.listen(port, () => {
     console.log('Сервер запущен.');
 });
