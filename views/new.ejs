@@ -3,7 +3,7 @@
 
     <h2 class="mb-4">Добавить студента</h2>
 
-    <form action="/student/new" method="POST">
+    <form action="/student/new" method="POST" enctype=multipart/form-data>
         <input type="text" name="name" class="form-control" placeholder="ФИО">
 
         <input type="text" name="institute" class="form-control" placeholder="Институт">
@@ -12,7 +12,7 @@
 
         <input type="text" name="group" class="form-control" placeholder="Группа">
 
-        <input id="input-fas" name="input-fas[]" type="file" multiple>
+        <input id="input-fas" name="input-fas" type="file" multiple>
 
         <button type="submit" class="btn btn-primary mt-3 btn-block">Добавить</button>
 
@@ -23,7 +23,9 @@ $("#input-fas").fileinput({
     theme: "fas",
     language: "ru",
     showUpload: false,
+    //uploadUrl: "/student/new",
     uploadAsync: false,
+    maxFileSize: 15360,
     overwriteInitial: false,
     previewFileIcon: '<i class="fas fa-file"></i>',
     preferIconicPreview: true, 

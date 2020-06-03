@@ -8,6 +8,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -26,6 +27,8 @@ mongoose.connect(process.env.DATABASE, {
     console.log('База данных подключена.')
 });
 
+app.use(fileUpload());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

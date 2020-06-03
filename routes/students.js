@@ -4,10 +4,9 @@ const passport = require('passport');
 const crypto = require('crypto');
 const async = require('async');
 const nodemailer = require('nodemailer');
-
 const User = require('../models/usermodel');
 const Student = require('../models/student');
-
+const File= require('../models/filemodel');
 // Проверка на аутентификацию
 function isAuthenticatedUser(req, res, next) {
     if (req.isAuthenticated()) {
@@ -60,6 +59,7 @@ router.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
     failureFlash: 'Неверное имя пользователя или пароль'
 }));
+
 
 router.post('/signup', (req, res) => {
     let { name, email, password } = req.body;
@@ -255,22 +255,53 @@ router.get('/edit/:id', isAuthenticatedUser, (req, res) => {
 
 //NEW
 router.post('/student/new', isAuthenticatedUser, (req, res) => {
-    let newStudent = {
-        name: req.body.name,
-        institute: req.body.institute,
-        department: req.body.department,
-        group: req.body.group
-    };
 
-    Student.create(newStudent)
-        .then(student => {
-            req.flash('success_msg', 'Студент добавлен в базу данных.')
-            res.redirect('/');
-        })
-        .catch(err => {
-            req.flash('error_msg', 'Ошибка: ' + err)
-            res.redirect('/');
-        });
+    function addFiles(prefiles) {
+        return new Promise((res, rej)=>{
+
+            if (!prefiles) res([]);
+            let files = prefiles['input-fas'];
+            if (!Array.isArray(files)) files = [files]
+
+            const filesnew = files.map(e=>({
+                name: e.name, 
+                data: e.data, 
+                size: e.size,
+                mimetype: e.mimetype
+            }));
+            
+            File.create(filesnew)
+                .then(arr =>{
+                    res(arr.map(e=>e._id));
+                })
+                .catch(err =>{
+                    req.flash('error_msg', 'Ошибка: ' + err)
+                    res([]);
+                });
+        });        
+    }
+
+    // тут либо возвращается массив со всеми id либо пустой массив
+    addFiles(req.files).then(filesid => {
+        let newStudent = {
+            name: req.body.name,
+            institute: req.body.institute,
+            department: req.body.department,
+            group: req.body.group,
+            filesid: filesid
+        };
+    
+        Student.create(newStudent)
+            .then(student => {
+                req.flash('success_msg', 'Студент добавлен в базу данных.')
+                res.redirect('/');
+            })
+            .catch(err => {
+                req.flash('error_msg', 'Ошибка: ' + err)
+                res.redirect('/');
+            });
+    })
+
 });
 
 //UPDATE
@@ -298,10 +329,31 @@ router.put('/edit/:id', isAuthenticatedUser, (req, res) => {
 router.delete('/delete/:id', isAuthenticatedUser, (req, res) => {
     let searchQuery = { _id: req.params.id };
 
-    Student.deleteOne(searchQuery)
+    function deleteFiles(filesid) {
+        return new Promise((res, rej)=>{
+            File.deleteMany({_id: {'$in': filesid}})
+                .then(ret=>{
+                    console.log(ret)
+                    res(ret)
+                })
+                .catch(err=>{
+                    req.flash('error_msg', 'Ошибка: ' + err)
+                    rej(err)
+                })
+        })
+    }
+
+    Student.findOneAndDelete(searchQuery)
         .then(student => {
-            req.flash('success_msg', 'Студент успешно удален.')
-            res.redirect('/');
+            console.log(student.filesid)
+            deleteFiles(student.filesid)
+                .then(()=>{
+                    req.flash('success_msg', 'Студент успешно удален.')
+                    res.redirect('/');
+                })
+                .catch(err=>{
+                    req.flash('error_msg', 'Ошибка: ' + err)
+                })
         })
         .catch(err => {
             req.flash('error_msg', 'Ошибка: ' + err)

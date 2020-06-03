@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
-
-let fileScheme = new mongoose.Schema({
-    file : String,
-});
+var Schema = mongoose.Schema;
 
 let studentScheme = new mongoose.Schema({
     name : String,
     institute : String,
     department : String,
     group : String,
-    portfolio : fileScheme
+    filesid : [Schema.Types.ObjectId]
 });
 
 module.exports = mongoose.model('Student', studentScheme);
