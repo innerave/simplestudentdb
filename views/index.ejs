@@ -29,7 +29,7 @@
                 <td><%= student.department %></td>
                 <td><%= student.group %></td>
                 <td>
-                    <a class="btn btn-primary" href="/edit/<%= student.id %>">Изменить</a>
+                    <a class="btn btn-primary" href="/edit/<%= student.id %>">Портфолио</a>
                     <form style="display: inline;" action="/delete/<%= student.id %>?_method=DELETE" method="POST">
                         <input type="hidden" name="_method" value="DELETE">
                         <button style="cursor: pointer;" type="submit" class="btn btn-danger ml-2">Удалить</button>
