@@ -16,6 +16,34 @@ function isAuthenticatedUser(req, res, next) {
     res.redirect('/login');
 }
 
+router.get('/test/:id', (req, res)=>{
+    Student.findOne({_id: req.params.id})
+            .then(e=>{
+                File.find({_id: {'$in': e.filesid}})
+                    .then(files=>{
+                        // console.log(files)
+                        res.send(files.map(e=>({_id: e._id, name: e.name})))
+                    })
+            })
+})
+
+router.get('/testfile/:fileid', (req, res)=>{
+    console.log(req.params.fileid)
+    File.findOne({_id: req.params.fileid})
+            .then(e=>{
+                console.log(e)
+                if (!e) {
+                    res.status(404).end()
+                    return
+                }
+                res.set('Content-Type', e.mimetype)
+                res.set('Content-Length', e.size)
+                res.set('Content-Disposition', 'attachment; filename=\"'+encodeURI(e.name)+'\";')
+                res.send(e.data)
+            })
+            .catch(e=> console.log(e))
+})
+
 router.get('/login', (req, res) => {
     res.render('login');
 });
@@ -253,36 +281,39 @@ router.get('/edit/:id', isAuthenticatedUser, (req, res) => {
         });
 });
 
+// FIXME: поменяй в другое место
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function addFiles(prefiles) {
+    return new Promise((res, rej)=>{
+
+        if (!prefiles) res([]);
+        let files = prefiles['input-fas'];
+        if (!Array.isArray(files)) files = [files]
+
+        const filesnew = files.map(e=>({
+            name: e.name, 
+            data: e.data, 
+            size: e.size,
+            mimetype: e.mimetype
+        }));
+        
+        File.create(filesnew)
+            .then(arr =>{
+                res(arr.map(e=>e._id));
+            })
+            .catch(err =>{
+                req.flash('error_msg', 'Ошибка: ' + err)
+                res([]);
+            });
+    });        
+}
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 //NEW
 router.post('/student/new', isAuthenticatedUser, (req, res) => {
-
-    function addFiles(prefiles) {
-        return new Promise((res, rej)=>{
-
-            if (!prefiles) res([]);
-            let files = prefiles['input-fas'];
-            if (!Array.isArray(files)) files = [files]
-
-            const filesnew = files.map(e=>({
-                name: e.name, 
-                data: e.data, 
-                size: e.size,
-                mimetype: e.mimetype
-            }));
-            
-            File.create(filesnew)
-                .then(arr =>{
-                    res(arr.map(e=>e._id));
-                })
-                .catch(err =>{
-                    req.flash('error_msg', 'Ошибка: ' + err)
-                    res([]);
-                });
-        });        
-    }
-
     // тут либо возвращается массив со всеми id либо пустой массив
     addFiles(req.files).then(filesid => {
+        console.log(filesid)
         let newStudent = {
             name: req.body.name,
             institute: req.body.institute,
@@ -306,23 +337,28 @@ router.post('/student/new', isAuthenticatedUser, (req, res) => {
 
 //UPDATE
 router.put('/edit/:id', isAuthenticatedUser, (req, res) => {
-    let searchQuery = { _id: req.params.id };
-    Student.updateOne(searchQuery, {
-        $set: {
-            name: req.body.name,
-            institute: req.body.institute,
-            department: req.body.department,
-            group: req.body.group
-        }
+    addFiles(req.files).then(filesid => {
+        const {name, institute, department, group} = req.body; 
+        const searchQuery = { _id: req.params.id };
+        Student.updateOne(searchQuery, 
+            {
+                $set: {
+                    name,
+                    institute,
+                    department,
+                    group
+                },
+                $addToSet: {filesid: { $each: filesid}}
+            })
+            .then(student => {
+                req.flash('success_msg', 'Информация о студенте обновлена успешно.')
+                res.redirect('/');
+            })
+            .catch(err => {
+                req.flash('error_msg', 'Ошибка: ' + err)
+                res.redirect('/');
+            });
     })
-        .then(student => {
-            req.flash('success_msg', 'Информация о студенте обновлена успешно.')
-            res.redirect('/');
-        })
-        .catch(err => {
-            req.flash('error_msg', 'Ошибка: ' + err)
-            res.redirect('/');
-        });
 });
 
 //DELETE
