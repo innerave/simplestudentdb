@@ -7,46 +7,6 @@ const nodemailer = require("nodemailer");
 const User = require("../models/usermodel");
 const Student = require("../models/student");
 const File = require("../models/filemodel");
-// Проверка на аутентификацию
-function isAuthenticatedUser(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  req.flash(
-    "error_msg",
-    "Для доступа к этой странцие необходимо авторизироваться."
-  );
-  res.redirect("/login");
-}
-
-router.get("/test/:id", (req, res) => {
-  Student.findOne({ _id: req.params.id }).then((e) => {
-    File.find({ _id: { $in: e.filesid } }).then((files) => {
-      // console.log(files)
-      res.send(files.map((e) => ({ _id: e._id, name: e.name })));
-    });
-  });
-});
-
-router.get("/testfile/:fileid", (req, res) => {
-  console.log(req.params.fileid);
-  File.findOne({ _id: req.params.fileid })
-    .then((e) => {
-      //console.log(e)
-      if (!e) {
-        res.status(404).end();
-        return;
-      }
-      res.set("Content-Type", e.mimetype);
-      res.set("Content-Length", e.size);
-      res.set(
-        "Content-Disposition",
-        'attachment; filename="' + encodeURI(e.name) + '";'
-      );
-      res.send(e.data);
-    })
-    .catch((e) => console.log(e));
-});
 
 router.get("/login", (req, res) => {
   res.render("login");
@@ -140,7 +100,6 @@ router.post("/password/change", (req, res) => {
   });
 });
 
-// вроде не полный ахтунг еще
 router.post("/forgot", (req, res, next) => {
   let recoveryPassword = "";
   async.waterfall(
@@ -281,8 +240,6 @@ router.post("/reset/:token", (req, res) => {
   );
 });
 
-//APP
-
 router.get("/", isAuthenticatedUser, (req, res) => {
   Student.find({})
     .then((students) => {
@@ -310,38 +267,8 @@ router.get("/edit/:id", isAuthenticatedUser, (req, res) => {
     });
 });
 
-// FIXME: поменяй в другое место
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-function addFiles(prefiles) {
-  return new Promise((res, rej) => {
-    if (!prefiles) res([]);
-    let files = prefiles["input-fas"];
-    if (!Array.isArray(files)) files = [files];
-
-    const filesnew = files.map((e) => ({
-      name: e.name,
-      data: e.data,
-      size: e.size,
-      mimetype: e.mimetype,
-    }));
-
-    File.create(filesnew)
-      .then((arr) => {
-        res(arr.map((e) => e._id));
-      })
-      .catch((err) => {
-        req.flash("error_msg", "Ошибка: " + err);
-        res([]);
-      });
-  });
-}
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-//NEW
 router.post("/student/new", isAuthenticatedUser, (req, res) => {
-  // тут либо возвращается массив со всеми id либо пустой массив
   addFiles(req.files).then((filesid) => {
-    //console.log(filesid)
     let newStudent = {
       name: req.body.name,
       institute: req.body.institute,
@@ -349,7 +276,6 @@ router.post("/student/new", isAuthenticatedUser, (req, res) => {
       group: req.body.group,
       filesid: filesid,
     };
-
     Student.create(newStudent)
       .then((student) => {
         req.flash("success_msg", "Студент добавлен в базу данных.");
@@ -362,7 +288,6 @@ router.post("/student/new", isAuthenticatedUser, (req, res) => {
   });
 });
 
-//UPDATE
 router.put("/edit/:id", isAuthenticatedUser, (req, res) => {
   addFiles(req.files).then((filesid) => {
     const { name, institute, department, group } = req.body;
@@ -387,7 +312,6 @@ router.put("/edit/:id", isAuthenticatedUser, (req, res) => {
   });
 });
 
-//DELETE
 router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
   let searchQuery = { _id: req.params.id };
 
@@ -395,7 +319,6 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     return new Promise((res, rej) => {
       File.deleteMany({ _id: { $in: filesid } })
         .then((ret) => {
-          //console.log(ret)
           res(ret);
         })
         .catch((err) => {
@@ -407,7 +330,6 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
 
   Student.findOneAndDelete(searchQuery)
     .then((student) => {
-      //console.log(student.filesid)
       deleteFiles(student.filesid)
         .then(() => {
           req.flash("success_msg", "Студент успешно удален.");
@@ -423,8 +345,70 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     });
 });
 
+router.get("/portfolio/:id", (req, res) => {
+  Student.findOne({ _id: req.params.id }).then((e) => {
+    File.find({ _id: { $in: e.filesid } }).then((files) => {
+      res.send(files.map((e) => ({ _id: e._id, name: e.name })));
+    });
+  });
+});
+
+router.get("/file/:fileid", (req, res) => {
+  console.log(req.params.fileid);
+  File.findOne({ _id: req.params.fileid })
+    .then((e) => {
+      if (!e) {
+        res.status(404).end();
+        return;
+      }
+      res.set("Content-Type", e.mimetype);
+      res.set("Content-Length", e.size);
+      res.set(
+        "Content-Disposition",
+        'attachment; filename="' + encodeURI(e.name) + '";'
+      );
+      res.send(e.data);
+    })
+    .catch((err) => req.flash("error_msg", "Ошибка: " + err));
+});
+
 router.get("*", (req, res) => {
   res.render("error");
 });
+
+function addFiles(prefiles) {
+  return new Promise((res, rej) => {
+    if (!prefiles) res([]);
+    let files = prefiles["input-fas"];
+    if (!Array.isArray(files)) files = [files];
+
+    const filesnew = files.map((e) => ({
+      name: e.name,
+      data: e.data,
+      size: e.size,
+      mimetype: e.mimetype,
+    }));
+
+    File.create(filesnew)
+      .then((arr) => {
+        res(arr.map((e) => e._id));
+      })
+      .catch((err) => {
+        req.flash("error_msg", "Ошибка: " + err);
+        res([]);
+      });
+  });
+}
+
+function isAuthenticatedUser(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  req.flash(
+    "error_msg",
+    "Для доступа к этой странцие необходимо авторизироваться."
+  );
+  res.redirect("/login");
+}
 
 module.exports = router;

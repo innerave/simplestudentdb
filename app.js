@@ -1,4 +1,3 @@
-//Скрутили в кучу пакеты...
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -12,7 +11,6 @@ const fileUpload = require("express-fileupload");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
-// Файлик с маршрутизацией
 const studentRoutes = require("./routes/students");
 
 const User = require("./models/usermodel");
@@ -56,11 +54,9 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(flash());
 
-//Переменные для сообщений
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash("success_msg");
   res.locals.error_msg = req.flash("error_msg");
-  //failureFlash в passport требует специальной переменной
   res.locals.error = req.flash("error");
   res.locals.currentUser = req.user;
   next();
