@@ -17,7 +17,6 @@
     </form>
 </div>
 <script>
-    $(document).ready(function () {
         $.get("/portfolio/<%= student.id %>", null, (dat, text, xhrh) => {
             const initialPreview = dat;
             $("#input-fas").fileinput({
@@ -82,6 +81,5 @@
                 }
             });
         })
-    });
 </script>
 <%- include('partials/footer') -%>
