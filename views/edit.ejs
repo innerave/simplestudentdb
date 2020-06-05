@@ -34,13 +34,13 @@
                 case 'xlsx':
                 case 'ppt':
                 case 'pptx':
-                    return 'office';
+                    return 'gdocs';
                 default:
                     return name;
             }
         }
         $.get("/portfolio/<%= student.id %>", null, (dat, text, xhrh) => {
-            console.log(dat)
+            // console.log(dat)
             const initialPreview = dat;
             $("#input-fas").fileinput({
                 theme: "fas",
