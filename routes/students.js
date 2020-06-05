@@ -348,12 +348,12 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
 router.get("/portfolio/:id",isAuthenticatedUser, (req, res) => {
   Student.findOne({ _id: req.params.id }).then((e) => {
     File.find({ _id: { $in: e.filesid } }).then((files) => {
-      res.send(files.map((e) => ({ _id: e._id, name: e.name })));
+      res.send(files.map((e) => ({ _id: e._id, name: e.name, size: e.size, type: e.mimetype})));
     });
   });
 });
 
-router.get("/file/:fileid",isAuthenticatedUser, (req, res) => {
+router.get("/file/:fileid", (req, res) => {
   console.log(req.params.fileid);
   File.findOne({ _id: req.params.fileid })
     .then((e) => {
@@ -361,12 +361,13 @@ router.get("/file/:fileid",isAuthenticatedUser, (req, res) => {
         res.status(404).end();
         return;
       }
+      res.set("X-Header", "VALUE");
       res.set("Content-Type", e.mimetype);
       res.set("Content-Length", e.size);
-      res.set(
-        "Content-Disposition",
-        'attachment; filename="' + encodeURI(e.name) + '";'
-      );
+      // res.set(
+      //   "Content-Disposition",
+      //   'attachment; filename="' + encodeURI(e.name) + '";'
+      // );
       res.send(e.data);
     })
     .catch((err) => req.flash("error_msg", "Ошибка: " + err));

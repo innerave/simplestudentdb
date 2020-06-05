@@ -1,6 +1,6 @@
 <%- include('partials/header') -%>
 
-<div class="container mt-5 w-50">
+<div class="container mt-5 w-51">
 
     <h2 class="mb-4">Портфолио и редактирование</h2>
 
@@ -17,7 +17,30 @@
     </form>
 </div>
 <script>
+        const getType = (_name)=>{
+            const name = _name.slice(_name.lastIndexOf('.')+1);
+            switch (name) {
+                case 'gif':
+                case 'png':
+                case 'jpg':
+                    return 'image';
+                case 'txt':
+                    return 'text';
+                case 'mov':
+                    return 'video';
+                case 'doc':
+                case 'docx':
+                case 'xls':
+                case 'xlsx':
+                case 'ppt':
+                case 'pptx':
+                    return 'office';
+                default:
+                    return name;
+            }
+        }
         $.get("/portfolio/<%= student.id %>", null, (dat, text, xhrh) => {
+            console.log(dat)
             const initialPreview = dat;
             $("#input-fas").fileinput({
                 theme: "fas",
@@ -30,15 +53,17 @@
                 overwriteInitial: false,
                 previewFileIcon: '<i class="fas fa-file"></i>',
                 preferIconicPreview: true,
-                initialPreview: initialPreview.map(e => e.name),
+                initialPreview: initialPreview.map(e => ("/file/" + e._id)),
                 initialPreviewAsData: true,
+                //initialPreviewFileType: ['office','text', 'image'],
                 initialPreviewConfig: initialPreview.map((e, num) => ({
                     caption: e.name,
-                    type: "text",
-                    downloadUrl: "/file/" + e._id,
+                    size: e.size,
+                    downloadUrl: '/file/'+e._id,
+                    type: getType(e.name),
+                    filetype: e.type,
                     key: num
                 })),
-                initialPreviewFileType: 'text',
                 previewFileIconSettings: {
                     'doc': '<i class="fas fa-file-word text-primary"></i>',
                     'xls': '<i class="fas fa-file-excel text-success"></i>',
