@@ -240,15 +240,21 @@ router.post("/reset/:token", (req, res) => {
   );
 });
 
-router.get("/", isAuthenticatedUser, (req, res) => {
+router.get("/populate", isAuthenticatedUser, (req, res) => {
   Student.find({})
+  
     .then((students) => {
-      res.render("index", { students: students });
+      res.json({ students: students });
+      //console.log(students)
     })
     .catch((err) => {
       req.flash("error_msg", "Ошибка: " + err);
       res.redirect("/");
     });
+});
+
+router.get("/", isAuthenticatedUser, (req, res) => {
+      res.render("index");
 });
 
 router.get("/student/new", isAuthenticatedUser, (req, res) => {
@@ -257,6 +263,9 @@ router.get("/student/new", isAuthenticatedUser, (req, res) => {
 
 router.get("/edit/:id", isAuthenticatedUser, (req, res) => {
   let searchQuery = { _id: req.params.id };
+  console.log(searchQuery)
+
+  
   Student.findOne(searchQuery)
     .then((student) => {
       res.render("edit", { student: student });
@@ -319,6 +328,7 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     return new Promise((res, rej) => {
       File.deleteMany({ _id: { $in: filesid } })
         .then((ret) => {
+          //res.set("X-Message", "Студент успешно удален");
           res(ret);
         })
         .catch((err) => {
@@ -332,8 +342,7 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     .then((student) => {
       deleteFiles(student.filesid)
         .then(() => {
-          req.flash("success_msg", "Студент успешно удален.");
-          res.redirect("/");
+          req.json("success_msg", "Студент успешно удален.");
         })
         .catch((err) => {
           req.flash("error_msg", "Ошибка: " + err);
@@ -346,7 +355,8 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
 });
 
 router.get("/portfolio/:id",isAuthenticatedUser, (req, res) => {
-  Student.findOne({ _id: req.params.id }).then((e) => {
+  Student.findOne({ _id: req.params.id 
+  }).then((e) => {
     File.find({ _id: { $in: e.filesid } }).then((files) => {
       res.send(files.map((e) => ({ _id: e._id, name: e.name, size: e.size, type: e.mimetype})));
     });

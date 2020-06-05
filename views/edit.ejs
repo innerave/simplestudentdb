@@ -17,6 +17,7 @@
     </form>
 </div>
 <script>
+    
         const getType = (_name)=>{
             const name = _name.slice(_name.lastIndexOf('.')+1);
             switch (name) {
@@ -52,7 +53,7 @@
                 overwriteInitial: false,
                 previewFileIcon: '<i class="fas fa-file"></i>',
                 preferIconicPreview: true,
-                allowedFileExtensions: ['doc', 'docx', 'xlsx', 'xls', 'ppt', 'pptx', 'mov', 'jpeg', 'jpg', 'png'],
+                allowedFileExtensions: ['doc', 'docx', 'xlsx', 'xls', 'ppt', 'pptx', 'mov', 'jpeg', 'jpg', 'png', 'pdf'],
                 initialPreview: initialPreview.map(e => ("https://xn--80aeinkhk.xn--p1acf/file/" + e._id)),
                 initialPreviewAsData: true,
                 initialPreviewConfig: initialPreview.map((e, num) => ({
