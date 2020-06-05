@@ -1,6 +1,6 @@
 <%- include('partials/header') -%>
 
-<div class="container mt-5 w-51">
+<div class="container mt-5 w-75">
 
     <h2 class="mb-4">Портфолио и редактирование</h2>
 
@@ -40,15 +40,13 @@
             }
         }
         $.get("/portfolio/<%= student.id %>", null, (dat, text, xhrh) => {
-            // console.log(dat)
             const initialPreview = dat;
-            $("#input-fas").hidden=false;
+            $("#input-fas").prop( "hidden",false )
             $("#input-fas").fileinput({
                 theme: "fas",
                 language: "ru",
                 showUpload: false,
                 initialPreviewShowDelete: false,
-                //uploadUrl: "/student/new",
                 uploadAsync: false,
                 maxFileSize: 15360,
                 overwriteInitial: false,
@@ -57,7 +55,6 @@
                 allowedFileExtensions: ['doc', 'docx', 'xlsx', 'xls', 'ppt', 'pptx', 'mov', 'jpeg', 'jpg', 'png'],
                 initialPreview: initialPreview.map(e => ("https://xn--80aeinkhk.xn--p1acf/file/" + e._id)),
                 initialPreviewAsData: true,
-                //initialPreviewFileType: ['office','text', 'image'],
                 initialPreviewConfig: initialPreview.map((e, num) => ({
                     caption: e.name,
                     size: e.size,
