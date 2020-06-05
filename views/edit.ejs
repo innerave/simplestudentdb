@@ -12,7 +12,7 @@
         <input type="text" value="<%= student.department %>" name="department" class="form-control"
             placeholder="Кафедра">
         <input type="text" value="<%= student.group %>" name="group" class="form-control" placeholder="Группа">
-        <input id="input-fas" name="input-fas" type="file" multiple>
+        <input id="input-fas" name="input-fas" hidden="true" type="file" multiple>
         <button type="submit" class="btn btn-primary mt-3 btn-block">Сохранить</button>
     </form>
 </div>
@@ -20,7 +20,7 @@
         const getType = (_name)=>{
             const name = _name.slice(_name.lastIndexOf('.')+1);
             switch (name) {
-                case 'gif':
+                case 'jpeg':
                 case 'png':
                 case 'jpg':
                     return 'image';
@@ -42,6 +42,7 @@
         $.get("/portfolio/<%= student.id %>", null, (dat, text, xhrh) => {
             // console.log(dat)
             const initialPreview = dat;
+            $("#input-fas").hidden=false;
             $("#input-fas").fileinput({
                 theme: "fas",
                 language: "ru",
@@ -53,6 +54,7 @@
                 overwriteInitial: false,
                 previewFileIcon: '<i class="fas fa-file"></i>',
                 preferIconicPreview: true,
+                allowedFileExtensions: ['doc', 'docx', 'xlsx', 'xls', 'ppt', 'pptx', 'mov', 'jpeg', 'jpg', 'png'],
                 initialPreview: initialPreview.map(e => ("https://xn--80aeinkhk.xn--p1acf/file/" + e._id)),
                 initialPreviewAsData: true,
                 //initialPreviewFileType: ['office','text', 'image'],
