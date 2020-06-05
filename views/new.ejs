@@ -1,5 +1,5 @@
 <%- include('partials/header') -%>
-<div class="container mt-5 w-50">
+<div class="container mt-5 w-75">
 
     <h2 class="mb-4">Добавить студента</h2>
 
@@ -23,10 +23,10 @@
         theme: "fas",
         language: "ru",
         showUpload: false,
-        //uploadUrl: "/student/new",
         uploadAsync: false,
         maxFileSize: 15360,
         overwriteInitial: false,
+        allowedFileExtensions: ['doc', 'docx', 'xlsx', 'xls', 'ppt', 'pptx', 'mov', 'jpeg', 'jpg', 'png'],
         previewFileIcon: '<i class="fas fa-file"></i>',
         preferIconicPreview: true,
         initialPreviewAsData: true,
