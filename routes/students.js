@@ -353,7 +353,7 @@ router.get("/portfolio/:id",isAuthenticatedUser, (req, res) => {
   });
 });
 
-router.get("/file/:fileid",isAuthenticatedUser, (req, res) => {
+router.get("/file/:fileid", (req, res) => {
   // console.log(req.params.fileid);
   File.findOne({ _id: req.params.fileid })
     .then((e) => {
