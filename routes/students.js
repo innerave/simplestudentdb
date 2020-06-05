@@ -364,10 +364,6 @@ router.get("/file/:fileid", (req, res) => {
       res.set("X-Header", "VALUE");
       res.set("Content-Type", e.mimetype);
       res.set("Content-Length", e.size);
-      // res.set(
-      //   "Content-Disposition",
-      //   'attachment; filename="' + encodeURI(e.name) + '";'
-      // );
       res.send(e.data);
     })
     .catch((err) => req.flash("error_msg", "Ошибка: " + err));
