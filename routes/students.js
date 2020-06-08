@@ -245,7 +245,6 @@ router.get("/populate", isAuthenticatedUser, (req, res) => {
   
     .then((students) => {
       res.json({ students: students });
-      //console.log(students)
     })
     .catch((err) => {
       req.flash("error_msg", "Ошибка: " + err);
@@ -328,7 +327,7 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     return new Promise((res, rej) => {
       File.deleteMany({ _id: { $in: filesid } })
         .then((ret) => {
-          //res.set("X-Message", "Студент успешно удален");
+         
           res(ret);
         })
         .catch((err) => {
@@ -342,7 +341,7 @@ router.delete("/delete/:id", isAuthenticatedUser, (req, res) => {
     .then((student) => {
       deleteFiles(student.filesid)
         .then(() => {
-          req.json("success_msg", "Студент успешно удален.");
+          res.status(200).end();
         })
         .catch((err) => {
           req.flash("error_msg", "Ошибка: " + err);
@@ -364,7 +363,6 @@ router.get("/portfolio/:id",isAuthenticatedUser, (req, res) => {
 });
 
 router.get("/file/:fileid", (req, res) => {
-  // console.log(req.params.fileid);
   File.findOne({ _id: req.params.fileid })
     .then((e) => {
       if (!e) {

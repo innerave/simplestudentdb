@@ -29,87 +29,82 @@
   </table>
 </div>
 <script>
-
-     $(document).ready(function(){
-  $("#dataTable").DataTable({
-    processing: true,
-    //serverSide: true,
-    language: {
-      url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json",
-    },
-    ajax: {
-      url: "/populate",
-      dataSrc: "students",
-    },
-    columns: [
-      { data: "_id" },
-      { data: "name" },
-      { data: "institute" },
-      { data: "department" },
-      { data: "group" },
-    ],
-    columnDefs: [
-      {
-        targets: [0],
-        visible: false,
+  $(document).ready(function () {
+    $("#dataTable").DataTable({
+      processing: true,
+      //serverSide: true,
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Russian.json",
       },
-    ],
-    select: "single",
-    dom: "Bfrtip",
-    buttons: [
-      {
-        extend: "excel",
-        titleAttr: "Экспорт в Excel",
-        text: '<i class="far fa-file-excel"></i>',
+      ajax: {
+        url: "/populate",
+        dataSrc: "students",
       },
-      {
-        extend: "pdf",
-        text: '<i class="far fa-file-pdf"></i>',
-        titleAttr: "Экспорт в Excel",
-      },
-      {
-        extend: "selectedSingle",
-        text: "Портфолио",
-        className: "btn btn-success",
-
-        action: function (e, dt, button, config) {
-          var rows = dt.rows({ selected: true }).count();
-
-          if (rows == 0 || rows > 1) {
-            //перестрахуемся :)
-          } else {
-            let pid = dt.rows({ selected: true }).data()[0]._id;
-            window.location.href = "/edit/" + pid;
-          }
+      columns: [
+        { data: "_id" },
+        { data: "name" },
+        { data: "institute" },
+        { data: "department" },
+        { data: "group" },
+      ],
+      columnDefs: [
+        {
+          targets: [0],
+          visible: false,
         },
-      },
-      {
-        extend: "selectedSingle",
-        text: "Удалить",
-        className: "btn btn-danger",
-        action: function (e, dt, button, config) {
-          var rows = dt.rows({ selected: true }).count();
-
-          if (rows == 0 || rows > 1) {
-            //перестрахуемся :)
-          } else {
-            let did = dt.rows({ selected: true }).data()[0]._id;
-            dt.rows({ selected: true }).remove().draw();
-            $.ajax({
-              url: "/delete/" + did,
-              method: "delete",
-            });
-            
-            //table.draw();
-
-            
-          }
+      ],
+      select: "single",
+      dom: "Bfrtip",
+      buttons: [
+        {
+          extend: "excel",
+          titleAttr: "Экспорт в Excel",
+          text: '<i class="far fa-file-excel"></i>',
         },
-      },
-    ],
-  })
-});
+        {
+          extend: "pdf",
+          text: '<i class="far fa-file-pdf"></i>',
+          titleAttr: "Экспорт в Excel",
+        },
+        {
+          extend: "selectedSingle",
+          text: "Портфолио",
+          className: "btn btn-success",
 
-  
+          action: function (e, dt, button, config) {
+            var rows = dt.rows({ selected: true }).count();
+
+            if (rows == 0 || rows > 1) {
+              //перестрахуемся :)
+            } else {
+              let pid = dt.rows({ selected: true }).data()[0]._id;
+              window.location.href = "/edit/" + pid;
+            }
+          },
+        },
+        {
+          extend: "selectedSingle",
+          text: "Удалить",
+          className: "btn btn-danger",
+          action: function (e, dt, button, config) {
+            var rows = dt.rows({ selected: true }).count();
+
+            if (rows == 0 || rows > 1) {
+              //перестрахуемся :)
+            } else {
+              let did = dt.rows({ selected: true }).data()[0]._id;
+              dt.rows({ selected: true }).remove().draw();
+              $.ajax({
+                url: "/delete/" + did,
+                method: "delete",
+              });
+
+              //table.draw();
+            }
+          },
+        },
+      ],
+    });
+  });
 </script>
 <%- include('partials/footer') -%>
